@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="text-3xl font-bold mb-2">Hi {{ user.name or "there" }} 👋</h1>
+<p class="text-gray-500 mb-6">Here’s your day at a glance.</p>
+
+<div class="grid md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500 text-sm">Consumed</p>
+    <p class="text-2xl font-bold text-green-600">{{ consumed }} kcal</p>
+  </div>
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500 text-sm">Remaining</p>
+    <p class="text-2xl font-bold text-orange-500">{{ remaining }} kcal</p>
+  </div>
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500 text-sm">Health Score</p>
+    <p class="text-2xl font-bold">{{ health_score }}/100</p>
+  </div>
+  <div class="bg-white p-5 rounded-2xl shadow">
+    <p class="text-gray-500 text-sm">Water</p>
+    <p class="text-2xl font-bold text-blue-500">{{ water }} 💧</p>
+    <form method="POST" action="/water"><button class="mt-2 text-sm text-blue-600">+ Add glass</button></form>
+  </div>
+</div>
+
+<!-- AI recommendation -->
+{% if recommendation %}
+<div class="bg-gradient-to-r from-green-500 to-orange-400 text-white p-6 rounded-2xl shadow mb-6">
+  <p class="uppercase text-xs tracking-widest opacity-80">AI Recommendation • {{ recommendation.meal_type }}</p>
+  <h2 class="text-2xl font-bold mt-1">{{ recommendation.food.name }}</h2>
+  <p class="mt-2 opacity-90">{{ recommendation.explanation }}</p>
+  <form method="POST" action="/log_meal" class="mt-4">
+    <input type="hidden" name="food_id" value="{{ recommendation.food.id }}">
+    <button class="bg-white text-green-600 font-semibold px-5 py-2 rounded-lg hover:bg-gray-100">Log this meal ✓</button>
+  </form>
+</div>
+{% endif %}
+
+<div class="grid md:grid-cols-2 gap-6">
+  <div class="bg-white p-6 rounded-2xl shadow">
+    <h3 class="font-bold mb-4">Macros today</h3>
+    <canvas id="macroChart"></canvas>
+  </div>
+
+  <div class="bg-white p-6 rounded-2xl shadow">
+    <h3 class="font-bold mb-4">Today's meals</h3>
+    {% if meals %}
+      <ul class="divide-y">
+        {% for m in meals %}
+          <li class="py-2 flex justify-between">
+            <span>{{ m.name }} <span class="text-xs text-gray-400">({{ m.meal_type }})</span></span>
+            <span class="text-gray-600">{{ m.calories }} kcal</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">No meals logged yet.</p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Quick log -->
+<div class="bg-white mt-6 p-6 rounded-2xl shadow">
+  <h3 class="font-bold mb-4">Log a meal manually</h3>
+  <form method="POST" action="/log_meal" class="flex gap-3 flex-wrap">
+    <select name="food_id" class="border p-3 rounded-lg flex-1" id="foodSelect"></select>
+    <button class="bg-green-500 text-white px-5 rounded-lg hover:bg-green-600">Add</button>
+  </form>
+</div>
+
+<script>
+const ctx = document.getElementById('macroChart');
+new Chart(ctx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Protein', 'Carbs', 'Fats'],
+    datasets: [{
+      data: [{ protein }, { carbs }, { fats }],
+      backgroundColor: ['#10b981','#f59e0b','#ef4444']
+    }]
+  }
+});
+
+fetch('/api/foods').then(r=>r.json()).then(foods=>{
+  const sel = document.getElementById('foodSelect');
+  foods.forEach(f=>{
+    const o = document.createElement('option');
+    o.value = f.id;
+    o.textContent = `${f.name} — ${f.calories} kcal (${f.meal_type})`;
+    sel.appendChild(o);
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow">
+  <h2 class="text-3xl font-bold mb-6 text-center">Welcome back</h2>
+  <form method="POST" class="space-y-4">
+    <input type="email" name="email" placeholder="Email" required class="w-full border p-3 rounded-lg">
+    <input type="password" name="password" placeholder="Password" required class="w-full border p-3 rounded-lg">
+    <button class="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">Login</button>
+  </form>
+  <p class="text-center mt-4 text-sm">New here? <a href="/signup" class="text-green-600">Sign up</a></p>
+</div>
+{% endblock %}

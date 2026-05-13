@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="text-center py-20">
+  <h1 class="text-5xl md:text-6xl font-bold mb-6">
+    Eat Smarter with <span class="bg-gradient-to-r from-green-500 to-orange-400 bg-clip-text text-transparent">CaloByte</span>
+  </h1>
+  <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+    Your personal AI nutrition coach — tracks your calories, learns your habits,
+    and tells you exactly what to eat next.
+  </p>
+  <a href="/signup" class="bg-green-500 text-white px-8 py-3 rounded-xl text-lg hover:bg-green-600 shadow-lg">
+    Get Started Free →
+  </a>
+</section>
+
+<section class="grid md:grid-cols-3 gap-6 my-16">
+  <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+    <div class="text-4xl mb-3">🤖</div>
+    <h3 class="font-bold text-xl mb-2">AI Recommendations</h3>
+    <p class="text-gray-600">Get meal ideas tailored to your goal, time of day, and remaining calories.</p>
+  </div>
+  <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+    <div class="text-4xl mb-3">📊</div>
+    <h3 class="font-bold text-xl mb-2">Smart Dashboard</h3>
+    <p class="text-gray-600">Track calories, macros, water, and your daily health score in one place.</p>
+  </div>
+  <div class="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition">
+    <div class="text-4xl mb-3">🥗</div>
+    <h3 class="font-bold text-xl mb-2">Personalized Meals</h3>
+    <p class="text-gray-600">Vegan, keto, Indian, high-protein — CaloByte adapts to your tastes.</p>
+  </div>
+</section>
+{% endblock %}

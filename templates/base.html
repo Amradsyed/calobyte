@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CaloByte{% endblock %}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+<nav class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+  <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-500 to-orange-400 bg-clip-text text-transparent">
+    🍱 CaloByte
+  </a>
+  <div class="space-x-4">
+    {% if user %}
+      <a href="/dashboard" class="text-gray-700 hover:text-green-600">Dashboard</a>
+      <a href="/logout" class="text-red-500">Logout</a>
+    {% else %}
+      <a href="/login" class="text-gray-700">Login</a>
+      <a href="/signup" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Sign Up</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto p-6">
+  {% with messages = get_flashed_messages() %}
+    {% for m in messages %}
+      <div class="bg-yellow-100 text-yellow-800 p-3 rounded mb-3">{{ m }}</div>
+    {% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="text-center text-gray-400 py-6 text-sm">© 2025 CaloByte — Eat Smart, Live Better</footer>
+</body>
+</html>

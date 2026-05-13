@@ -1,0 +1,7 @@
+@"
+Flask==3.0.3
+Flask-Login==0.6.3
+Werkzeug==3.0.4
+pandas==2.2.2
+gunicorn==22.0.0
+"@ | Set-Content C:\CALOBYTE\requirements.txt

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow">
+  <h2 class="text-3xl font-bold mb-6">Tell us about you 👋</h2>
+  <form method="POST" class="grid md:grid-cols-2 gap-4">
+    <input name="name" placeholder="Full name" required class="border p-3 rounded-lg">
+    <input name="age" type="number" placeholder="Age" required class="border p-3 rounded-lg">
+    <input name="height" type="number" step="0.1" placeholder="Height (cm)" required class="border p-3 rounded-lg">
+    <input name="weight" type="number" step="0.1" placeholder="Weight (kg)" required class="border p-3 rounded-lg">
+    <select name="gender" class="border p-3 rounded-lg">
+      <option>Male</option><option>Female</option><option>Other</option>
+    </select>
+    <select name="activity" class="border p-3 rounded-lg">
+      <option>Sedentary</option><option>Light</option><option>Moderate</option><option>Active</option>
+    </select>
+    <input name="calorie_goal" type="number" placeholder="Daily calorie goal (e.g. 2000)" required class="border p-3 rounded-lg">
+    <select name="fitness_goal" class="border p-3 rounded-lg">
+      <option value="weight_loss">Weight Loss</option>
+      <option value="maintenance">Maintenance</option>
+      <option value="muscle_gain">Muscle Gain</option>
+      <option value="healthy_eating">Healthy Eating</option>
+    </select>
+    <div class="md:col-span-2">
+      <p class="font-semibold mb-2">Food preferences</p>
+      <div class="flex flex-wrap gap-3">
+        {% for p in ["vegetarian","vegan","non-vegetarian","high-protein","keto","indian","american","healthy"] %}
+          <label class="bg-gray-100 px-3 py-2 rounded-full cursor-pointer hover:bg-green-100">
+            <input type="checkbox" name="preferences" value="{{p}}" class="mr-1">{{p}}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+    <button class="md:col-span-2 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">Save & Continue →</button>
+  </form>
+</div>
+{% endblock %}
