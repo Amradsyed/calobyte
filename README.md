@@ -24,7 +24,6 @@ CaloByte is an AI-powered nutrition and fitness web app built with Flask. It hel
 ## Run Locally in VS Code
 
 1. Clone the repo:
-
 ```bash
 git clone YOUR_GITHUB_REPO_URL
 cd calobyte
@@ -52,4 +51,3 @@ python app.py
 7. Open in browser:
 http://127.0.0.1:5000
 
-Do not put your real `.env` or API key on GitHub.
