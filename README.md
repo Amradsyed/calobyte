@@ -51,3 +51,21 @@ python app.py
 7. Open in browser:
 http://127.0.0.1:5000
 
+8.
+## Important Security Note
+Do not upload your real `.env` file or API keys to GitHub.
+Create your own `.env` file locally and add:
+```env
+NVIDIA_API_KEY=your_api_key_here
+
+9.
+Also make sure your repo has `.gitignore` with:
+
+```gitignore
+.env
+*.db
+venv/
+__pycache__/
+*.pyc
+
+
