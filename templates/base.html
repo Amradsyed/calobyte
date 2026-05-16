@@ -1,38 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block title %}CaloByte{% endblock %}</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CaloByte - AI-Powered Smart Meal Recommendations. Personalized nutrition plans tailored to your goals." />
+  <meta name="theme-color" content="#070d1a" />
+  <title>{% block title %}CaloByte - AI-Powered Nutrition{% endblock %}</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/calobyte.css') }}" />
+
+  <!-- Chart.js for dashboard charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  {% block extra_head %}{% endblock %}
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
-<nav class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-  <a href="/" class="text-2xl font-bold bg-gradient-to-r from-green-500 to-orange-400 bg-clip-text text-transparent">
-    🍱 CaloByte
-  </a>
-  <div class="space-x-4">
-    {% if user %}
-      <a href="/dashboard" class="text-gray-700 hover:text-green-600">Dashboard</a>
-      <a href="/logout" class="text-red-500">Logout</a>
-    {% else %}
-      <a href="/login" class="text-gray-700">Login</a>
-      <a href="/signup" class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">Sign Up</a>
+<body>
+  <!-- Navbar -->
+  <nav id="navbar" class="navbar">
+    <div class="navbar-inner">
+      <a href="{{ url_for('index') }}" class="logo">
+        <div class="logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
+        <span class="logo-text">Calo<span class="text-gradient">Byte</span></span>
+      </a>
+
+      <div class="nav-links">
+        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+        <a href="{{ url_for('meal_plan') }}" class="nav-link {% if request.endpoint == 'meal_plan' %}active{% endif %}">Meal Planner</a>
+        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
+        <a href="{{ url_for('index') }}#features" class="nav-link">Nutrition</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+
+      <div class="nav-auth">
+        {% if user %}
+          <a href="{{ url_for('dashboard') }}" class="btn-ghost">Dashboard</a>
+          <a href="{{ url_for('logout') }}" class="btn-outline" style="padding:0.45rem 1.1rem;font-size:0.825rem;">Log out</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn-ghost">Log in</a>
+          <a href="{{ url_for('signup') }}" class="btn-primary" style="padding:0.5rem 1.25rem;font-size:0.85rem;">Sign Up</a>
+        {% endif %}
+      </div>
+
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
+        <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="mobile-menu glass-strong">
+      <a href="{{ url_for('index') }}" class="mobile-nav-link">Home</a>
+      <a href="{{ url_for('meal_plan') }}" class="mobile-nav-link">Meal Planner</a>
+      <a href="{{ url_for('dashboard') }}" class="mobile-nav-link">Dashboard</a>
+      <a href="{{ url_for('index') }}#features" class="mobile-nav-link">Nutrition</a>
+      <a href="#contact" class="mobile-nav-link">Contact</a>
+
+      <div class="mobile-nav-auth">
+        {% if user %}
+          <a href="{{ url_for('logout') }}" class="btn-outline btn-full">Log out</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn-ghost btn-full">Log in</a>
+          <a href="{{ url_for('signup') }}" class="btn-primary btn-full">Sign Up</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:0.5rem;min-width:320px;">
+        {% for category, message in messages %}
+          <div class="flash-message glass-strong" style="padding:0.75rem 1.25rem;border-radius:12px;font-size:0.875rem;
+            {% if category == 'error' %}border-color:rgba(248,113,113,0.4);color:#f87171;
+            {% else %}border-color:rgba(34,211,238,0.3);color:#22d3ee;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
-  </div>
-</nav>
-
-<main class="max-w-6xl mx-auto p-6">
-  {% with messages = get_flashed_messages() %}
-    {% for m in messages %}
-      <div class="bg-yellow-100 text-yellow-800 p-3 rounded mb-3">{{ m }}</div>
-    {% endfor %}
   {% endwith %}
-  {% block content %}{% endblock %}
-</main>
 
-<footer class="text-center text-gray-400 py-6 text-sm">© 2025 CaloByte — Eat Smart, Live Better</footer>
+  <!-- Page Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+  <footer id="contact" class="footer">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div>
+          <a href="{{ url_for('index') }}" class="logo">
+            <div class="logo-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <span class="logo-text">CaloByte</span>
+          </a>
+          <p class="footer-brand-text">AI-powered nutrition platform helping you eat smarter and live healthier every day.</p>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Product</h4>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('meal_plan') }}">Meal Planner</a></li>
+            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+            <li><a href="{{ url_for('index') }}#features">Nutrition Analysis</a></li>
+            <li><a href="{{ url_for('signup') }}">Get Started</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Account</h4>
+          <ul class="footer-links">
+            {% if user %}
+              <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+              <li><a href="{{ url_for('meal_plan') }}">Meal Plan</a></li>
+              <li><a href="{{ url_for('logout') }}">Log out</a></li>
+            {% else %}
+              <li><a href="{{ url_for('login') }}">Log in</a></li>
+              <li><a href="{{ url_for('signup') }}">Sign up</a></li>
+            {% endif %}
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Stay Updated</h4>
+          <p style="font-size:0.875rem;color:var(--muted);margin-bottom:0.75rem;">Get nutrition tips and product updates.</p>
+          <form id="newsletter-form" class="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="Enter your email" required />
+            <button type="submit" class="newsletter-btn">Subscribe</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copyright">&copy; 2026 CaloByte. All rights reserved.</p>
+        <div class="footer-social">
+          <a href="#">Twitter</a>
+          <a href="#">Instagram</a>
+          <a href="#">LinkedIn</a>
+          <a href="#">YouTube</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <script src="{{ url_for('static', filename='js/calobyte.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
 </body>
 </html>

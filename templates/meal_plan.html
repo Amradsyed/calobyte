@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Your Meal Plan - CaloByte{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  <div class="dashboard-inner">
+
+    <div class="page-header">
+      <h1 class="page-title">Your <span class="text-gradient">Meal Plan</span></h1>
+      <p class="page-sub">
+        Daily calorie goal: <strong style="color:var(--text);">{{ plan.calorie_goal }} kcal</strong>
+        &nbsp;·&nbsp;
+        Water target: <strong style="color:var(--accent);">{{ plan.water_litres }}L / day</strong>
+      </p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+      <div class="stat-card fade-in-up-1" style="padding:1rem 1.25rem;">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Calorie Goal</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;" class="text-gradient">{{ plan.calorie_goal }}</div>
+        <div style="font-size:0.7rem;color:var(--muted);">kcal / day</div>
+      </div>
+
+      <div class="stat-card fade-in-up-2" style="padding:1rem 1.25rem;">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Water Target</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;color:#22d3ee;">{{ plan.water_litres }}L</div>
+        <div style="font-size:0.7rem;color:var(--muted);">per day</div>
+      </div>
+
+      <div class="stat-card fade-in-up-3" style="padding:1rem 1.25rem;">
+        <div style="font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem;">Plan Duration</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:1.5rem;font-weight:700;">7</div>
+        <div style="font-size:0.7rem;color:var(--muted);">days</div>
+      </div>
+    </div>
+
+    <div class="meal-plan-grid">
+      {% for day in plan.plan %}
+      <div class="day-card scroll-reveal">
+        <div class="day-name">{{ day.day }}</div>
+        <div class="day-cals">
+          <span style="color:#22d3ee;font-weight:600;">{{ day.total_calories }}</span> kcal total
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+          <div>
+            <div class="meal-row">
+              <span class="meal-type-badge badge-breakfast">Breakfast</span>
+              {% if day.breakfast %}
+                <span class="meal-name">{{ day.breakfast.name }}</span>
+              {% else %}
+                <span class="meal-name" style="color:var(--muted);">No breakfast found</span>
+              {% endif %}
+            </div>
+            {% if day.breakfast %}
+              <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;margin-left:0.1rem;">
+                {{ day.breakfast.calories }} kcal · {{ day.breakfast.portion }}<br>
+                Protein {{ day.breakfast.protein }}g · Carbs {{ day.breakfast.carbs }}g · Fats {{ day.breakfast.fats }}g
+              </div>
+            {% endif %}
+          </div>
+
+          <div>
+            <div class="meal-row">
+              <span class="meal-type-badge badge-lunch">Lunch</span>
+              {% if day.lunch %}
+                <span class="meal-name">{{ day.lunch.name }}</span>
+              {% else %}
+                <span class="meal-name" style="color:var(--muted);">No lunch found</span>
+              {% endif %}
+            </div>
+            {% if day.lunch %}
+              <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;margin-left:0.1rem;">
+                {{ day.lunch.calories }} kcal · {{ day.lunch.portion }}<br>
+                Protein {{ day.lunch.protein }}g · Carbs {{ day.lunch.carbs }}g · Fats {{ day.lunch.fats }}g
+              </div>
+            {% endif %}
+          </div>
+
+          <div>
+            <div class="meal-row">
+              <span class="meal-type-badge badge-dinner">Dinner</span>
+              {% if day.dinner %}
+                <span class="meal-name">{{ day.dinner.name }}</span>
+              {% else %}
+                <span class="meal-name" style="color:var(--muted);">No dinner found</span>
+              {% endif %}
+            </div>
+            {% if day.dinner %}
+              <div style="font-size:0.72rem;color:var(--muted);line-height:1.5;margin-left:0.1rem;">
+                {{ day.dinner.calories }} kcal · {{ day.dinner.portion }}<br>
+                Protein {{ day.dinner.protein }}g · Carbs {{ day.dinner.carbs }}g · Fats {{ day.dinner.fats }}g
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div style="display:flex;gap:1rem;margin-top:2rem;flex-wrap:wrap;">
+      <a href="{{ url_for('dashboard') }}" class="btn-outline">
+        Back to Dashboard
+      </a>
+      <a href="{{ url_for('onboarding') }}" class="btn-primary">
+        Update Profile &amp; Regenerate Plan
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -4,6 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import date
 from database import init_db, get_db
 from recommender import recommend, get_today_meals
+from ai_coach import get_ai_coach_advice
+from meal_plan import generate_meal_plan
 
 app = Flask(__name__)
 app.secret_key = "change-this-to-a-secret-key"
@@ -19,6 +21,11 @@ def current_user():
     u = conn.execute("SELECT * FROM users WHERE id=?", (uid,)).fetchone()
     conn.close()
     return dict(u) if u else None
+
+@app.context_processor
+def inject_user():
+    return {"user": current_user()}
+
 
 # ---------- Routes ----------
 @app.route("/")
@@ -72,17 +79,17 @@ def onboarding():
         conn = get_db()
         conn.execute("""
             UPDATE users SET name=?, age=?, height=?, weight=?, gender=?,
-            activity=?, calorie_goal=?, fitness_goal=?, preferences=?
+            activity=?, calorie_goal=?, water_goal_litres=?, fitness_goal=?, preferences=?
             WHERE id=?
         """, (
             request.form["name"], request.form["age"], request.form["height"],
             request.form["weight"], request.form["gender"], request.form["activity"],
-            request.form["calorie_goal"], request.form["fitness_goal"],
-            prefs, session["user_id"]
+            request.form["calorie_goal"], request.form["water_goal_litres"], 
+            request.form["fitness_goal"], prefs, session["user_id"]
         ))
         conn.commit()
         conn.close()
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("meal_plan"))
     return render_template("onboarding.html")
 
 @app.route("/dashboard")
@@ -110,6 +117,17 @@ def dashboard():
     conn.close()
 
     rec = recommend(user["id"])
+    ai_coach = get_ai_coach_advice(
+        user=user,
+        consumed=consumed,
+        remaining=remaining,
+        protein=protein,
+        carbs=carbs,
+        fats=fats,
+        water=glasses,
+        recommendation=rec
+    )
+
 
     # Health score (simple formula)
     score = 100
@@ -120,7 +138,8 @@ def dashboard():
     return render_template("dashboard.html",
         user=user, meals=meal_rows, consumed=consumed, remaining=remaining,
         protein=protein, carbs=carbs, fats=fats, water=glasses,
-        recommendation=rec, health_score=max(0, score))
+        recommendation=rec, health_score=max(0, score),
+        ai_coach=ai_coach)
 
 @app.route("/log_meal", methods=["POST"])
 def log_meal():
@@ -136,7 +155,7 @@ def log_meal():
               f["protein"], f["carbs"], f["fats"], str(date.today())))
         conn.commit()
     conn.close()
-    return redirect(url_for("dashboard"))
+    return redirect(url_for("meal_plan"))
 
 @app.route("/water", methods=["POST"])
 def water():
@@ -159,6 +178,12 @@ def api_foods():
     foods = conn.execute("SELECT * FROM foods").fetchall()
     conn.close()
     return jsonify([dict(f) for f in foods])
+@app.route("/meal_plan")
+def meal_plan():
+    user = current_user()
+    if not user: return redirect(url_for("login"))
+    plan = generate_meal_plan(user["id"])
+    return render_template("meal_plan.html", user=user, plan=plan)
 
 if __name__ == "__main__":
     app.run(debug=True)

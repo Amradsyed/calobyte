@@ -1,36 +1,109 @@
 {% extends "base.html" %}
+{% block title %}Setup Your Profile - CaloByte{% endblock %}
+{% block footer %}{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow">
-  <h2 class="text-3xl font-bold mb-6">Tell us about you 👋</h2>
-  <form method="POST" class="grid md:grid-cols-2 gap-4">
-    <input name="name" placeholder="Full name" required class="border p-3 rounded-lg">
-    <input name="age" type="number" placeholder="Age" required class="border p-3 rounded-lg">
-    <input name="height" type="number" step="0.1" placeholder="Height (cm)" required class="border p-3 rounded-lg">
-    <input name="weight" type="number" step="0.1" placeholder="Weight (kg)" required class="border p-3 rounded-lg">
-    <select name="gender" class="border p-3 rounded-lg">
-      <option>Male</option><option>Female</option><option>Other</option>
-    </select>
-    <select name="activity" class="border p-3 rounded-lg">
-      <option>Sedentary</option><option>Light</option><option>Moderate</option><option>Active</option>
-    </select>
-    <input name="calorie_goal" type="number" placeholder="Daily calorie goal (e.g. 2000)" required class="border p-3 rounded-lg">
-    <select name="fitness_goal" class="border p-3 rounded-lg">
-      <option value="weight_loss">Weight Loss</option>
-      <option value="maintenance">Maintenance</option>
-      <option value="muscle_gain">Muscle Gain</option>
-      <option value="healthy_eating">Healthy Eating</option>
-    </select>
-    <div class="md:col-span-2">
-      <p class="font-semibold mb-2">Food preferences</p>
-      <div class="flex flex-wrap gap-3">
-        {% for p in ["vegetarian","vegan","non-vegetarian","high-protein","keto","indian","american","healthy"] %}
-          <label class="bg-gray-100 px-3 py-2 rounded-full cursor-pointer hover:bg-green-100">
-            <input type="checkbox" name="preferences" value="{{p}}" class="mr-1">{{p}}
-          </label>
-        {% endfor %}
+<section class="form-section" style="padding-top:7rem;align-items:flex-start;">
+  <div class="hero-bg-orb hero-bg-orb-1" style="opacity:0.3;"></div>
+  <div class="hero-bg-orb hero-bg-orb-2" style="opacity:0.2;"></div>
+
+  <div class="form-card fade-in-up" style="max-width:760px;width:100%;">
+    <div style="display:flex;align-items:center;gap:0.875rem;margin-bottom:2rem;">
+      <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(59,130,246,0.3),rgba(34,211,238,0.2));display:flex;align-items:center;justify-content:center;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div>
+        <h1 class="form-title" style="margin-bottom:0.1rem;font-size:1.5rem;">Set Up Your Profile</h1>
+        <p class="form-sub" style="margin-bottom:0;font-size:0.8rem;">Help CaloByte personalize your nutrition and fitness plan.</p>
       </div>
     </div>
-    <button class="md:col-span-2 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600">Save & Continue →</button>
-  </form>
-</div>
+
+    <form method="POST" action="{{ url_for('onboarding') }}">
+      <div class="form-group">
+        <label class="form-label" for="name">Full Name</label>
+        <input class="form-input" type="text" id="name" name="name" placeholder="Your name" required />
+      </div>
+
+      <div class="form-input-grid" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="form-group">
+          <label class="form-label" for="age">Age</label>
+          <input class="form-input" type="number" id="age" name="age" placeholder="25" min="10" max="100" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="height">Height (cm)</label>
+          <input class="form-input" type="number" step="0.1" id="height" name="height" placeholder="175" min="100" max="250" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="weight">Weight (kg)</label>
+          <input class="form-input" type="number" step="0.1" id="weight" name="weight" placeholder="70" min="30" max="300" required />
+        </div>
+      </div>
+
+      <div class="form-input-grid">
+        <div class="form-group">
+          <label class="form-label" for="gender">Gender</label>
+          <select class="form-select" id="gender" name="gender" required>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="activity">Activity Level</label>
+          <select class="form-select" id="activity" name="activity" required>
+            <option value="">Select</option>
+            <option value="Sedentary">Sedentary</option>
+            <option value="Light">Light</option>
+            <option value="Moderate">Moderate</option>
+            <option value="Active">Active</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-input-grid">
+        <div class="form-group">
+          <label class="form-label" for="calorie_goal">Daily Calorie Goal</label>
+          <input class="form-input" type="number" id="calorie_goal" name="calorie_goal" placeholder="2000" min="800" max="6000" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="water_goal_litres">Daily Water Goal (litres)</label>
+          <input class="form-input" type="number" step="0.1" id="water_goal_litres" name="water_goal_litres" placeholder="2.5" min="0.5" max="10" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fitness_goal">Fitness Goal</label>
+        <select class="form-select" id="fitness_goal" name="fitness_goal" required>
+          <option value="">Select</option>
+          <option value="weight_loss">Weight Loss</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="muscle_gain">Muscle Gain</option>
+          <option value="healthy_eating">Healthy Eating</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Food Preferences</label>
+        <div style="display:flex;flex-wrap:wrap;gap:0.65rem;">
+          {% for p in ["vegetarian","vegan","non-vegetarian","high-protein","keto","indian","american","healthy"] %}
+            <label style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.55rem 0.75rem;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,0.04);font-size:0.8rem;color:var(--muted);cursor:pointer;">
+              <input type="checkbox" name="preferences" value="{{ p }}" />
+              {{ p }}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary btn-full" style="margin-top:0.5rem;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Save &amp; Generate My Plan
+      </button>
+    </form>
+  </div>
+</section>
 {% endblock %}

@@ -28,10 +28,16 @@ def init_db():
             gender TEXT,
             activity TEXT,
             calorie_goal INTEGER,
+            water_goal_litres REAL,
             fitness_goal TEXT,
             preferences TEXT
         )
     """)
+    try:
+       c.execute("ALTER TABLE users ADD COLUMN water_goal_litres REAL")
+    except sqlite3.OperationalError:
+       pass
+
 
     # Foods table
     c.execute("""

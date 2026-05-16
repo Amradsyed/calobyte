@@ -1,94 +1,231 @@
 {% extends "base.html" %}
+{% block title %}Dashboard - CaloByte{% endblock %}
+
 {% block content %}
-<h1 class="text-3xl font-bold mb-2">Hi {{ user.name or "there" }} 👋</h1>
-<p class="text-gray-500 mb-6">Here’s your day at a glance.</p>
+<div class="dashboard-layout">
+  <div class="dashboard-inner">
 
-<div class="grid md:grid-cols-4 gap-4 mb-6">
-  <div class="bg-white p-5 rounded-2xl shadow">
-    <p class="text-gray-500 text-sm">Consumed</p>
-    <p class="text-2xl font-bold text-green-600">{{ consumed }} kcal</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl shadow">
-    <p class="text-gray-500 text-sm">Remaining</p>
-    <p class="text-2xl font-bold text-orange-500">{{ remaining }} kcal</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl shadow">
-    <p class="text-gray-500 text-sm">Health Score</p>
-    <p class="text-2xl font-bold">{{ health_score }}/100</p>
-  </div>
-  <div class="bg-white p-5 rounded-2xl shadow">
-    <p class="text-gray-500 text-sm">Water</p>
-    <p class="text-2xl font-bold text-blue-500">{{ water }} 💧</p>
-    <form method="POST" action="/water"><button class="mt-2 text-sm text-blue-600">+ Add glass</button></form>
+    <div class="page-header">
+      <h1 class="page-title">
+        Good day, <span class="text-gradient">{{ user.name or "there" }}</span>
+      </h1>
+      <p class="page-sub">Here's your nutrition overview for today.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card fade-in-up-1">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:linear-gradient(135deg,rgba(249,115,22,0.25),rgba(249,115,22,0.05));">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          </div>
+          <span class="stat-unit">kcal</span>
+        </div>
+        <div class="stat-val">{{ consumed }}</div>
+        <div class="stat-lbl">Calories Consumed</div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-orange" data-width="{{ [(consumed / (user.calorie_goal or 2000) * 100)|int, 100]|min }}" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="stat-card fade-in-up-2">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(59,130,246,0.05));">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <span class="stat-unit">kcal</span>
+        </div>
+        <div class="stat-val">{{ remaining }}</div>
+        <div class="stat-lbl">Remaining Today</div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-blue" data-width="{{ [(remaining / (user.calorie_goal or 2000) * 100)|int, 100]|min }}" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="stat-card fade-in-up-3">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:linear-gradient(135deg,rgba(167,139,250,0.25),rgba(167,139,250,0.05));">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l7.78-7.78a5.5 5.5 0 0 0 1.06-8.84z"/></svg>
+          </div>
+          <span class="stat-unit">pts</span>
+        </div>
+        <div class="stat-val">{{ health_score }}</div>
+        <div class="stat-lbl">Health Score</div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-violet" data-width="{{ health_score }}" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="stat-card fade-in-up-4">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:linear-gradient(135deg,rgba(34,211,238,0.25),rgba(34,211,238,0.05));">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>
+          </div>
+          <span class="stat-unit">glasses</span>
+        </div>
+        <div class="stat-val">{{ water }}</div>
+        <div class="stat-lbl">Water Today</div>
+        <form method="POST" action="{{ url_for('water') }}" style="margin-top:0.75rem;">
+          <button type="submit" class="btn-outline" style="font-size:0.75rem;padding:0.45rem 0.8rem;">Add glass</button>
+        </form>
+      </div>
+
+      <div class="stat-card fade-in-up-5">
+        <div class="stat-header">
+          <div class="stat-icon" style="background:linear-gradient(135deg,rgba(52,211,153,0.25),rgba(52,211,153,0.05));">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <span class="stat-unit">BMI</span>
+        </div>
+        {% if user.height and user.weight %}
+          <div class="stat-val">{{ (user.weight / ((user.height / 100) * (user.height / 100))) | round(1) }}</div>
+        {% else %}
+          <div class="stat-val">--</div>
+        {% endif %}
+        <div class="stat-lbl">Body Mass Index</div>
+        <div class="progress-bar">
+          <div class="progress-fill progress-emerald" data-width="70" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-coach-card fade-in-up">
+      <div class="ai-coach-header">
+        <div class="ai-coach-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:0.9rem;font-weight:600;">AI Fitness Coach</div>
+          <div style="font-size:0.75rem;color:var(--muted);">Personalized insights for today</div>
+        </div>
+      </div>
+
+      <p style="font-size:0.9rem;line-height:1.7;color:rgba(226,232,240,0.85);">{{ ai_coach.summary }}</p>
+
+      <div class="ai-tips-grid">
+        <div class="ai-tip"><strong>Meal Tip</strong>{{ ai_coach.meal_tip }}</div>
+        <div class="ai-tip"><strong>Fitness Tip</strong>{{ ai_coach.fitness_tip }}</div>
+        <div class="ai-tip"><strong>Hydration Tip</strong>{{ ai_coach.water_tip }}</div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Macro Breakdown</div>
+
+        <div class="macro-row">
+          <div class="macro-dot-label"><div class="macro-dot" style="background:#ef4444;"></div>Protein</div>
+          <div><span class="macro-val">{{ protein }}g</span></div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:0.875rem;">
+          <div class="progress-fill" data-width="{{ [protein|int, 100]|min }}" style="width:0%;background:#ef4444;"></div>
+        </div>
+
+        <div class="macro-row">
+          <div class="macro-dot-label"><div class="macro-dot" style="background:#f59e0b;"></div>Carbs</div>
+          <div><span class="macro-val">{{ carbs }}g</span></div>
+        </div>
+        <div class="progress-bar" style="margin-bottom:0.875rem;">
+          <div class="progress-fill" data-width="{{ [carbs|int, 100]|min }}" style="width:0%;background:#f59e0b;"></div>
+        </div>
+
+        <div class="macro-row">
+          <div class="macro-dot-label"><div class="macro-dot" style="background:#3b82f6;"></div>Fats</div>
+          <div><span class="macro-val">{{ fats }}g</span></div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" data-width="{{ [fats|int, 100]|min }}" style="width:0%;background:#3b82f6;"></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Smart Meal Recommendation</div>
+
+        {% if recommendation %}
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(59,130,246,0.25),rgba(34,211,238,0.15));display:flex;align-items:center;justify-content:center;font-size:1.4rem;">
+              {% if recommendation.meal_type == 'breakfast' %}B
+              {% elif recommendation.meal_type == 'lunch' %}L
+              {% elif recommendation.meal_type == 'dinner' %}D
+              {% else %}M{% endif %}
+            </div>
+            <div>
+              <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;color:var(--muted);margin-bottom:0.2rem;">{{ recommendation.meal_type | capitalize }}</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:1rem;">{{ recommendation.food.name }}</div>
+            </div>
+          </div>
+
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;margin-bottom:1.25rem;">{{ recommendation.explanation }}</p>
+
+          <form method="POST" action="{{ url_for('log_meal') }}">
+            <input type="hidden" name="food_id" value="{{ recommendation.food.id }}" />
+            <button type="submit" class="btn-primary" style="font-size:0.825rem;padding:0.6rem 1.25rem;">Log This Meal</button>
+          </form>
+        {% else %}
+          <p style="font-size:0.85rem;color:var(--muted);line-height:1.6;">No recommendation is available yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-title">Today's Meals</div>
+        {% if meals %}
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            {% for m in meals %}
+              <div style="display:flex;justify-content:space-between;gap:1rem;padding:0.75rem;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,0.03);">
+                <div>
+                  <div style="font-weight:600;font-size:0.875rem;">{{ m.name }}</div>
+                  <div style="font-size:0.75rem;color:var(--muted);">{{ m.meal_type }}</div>
+                </div>
+                <div style="font-size:0.875rem;color:var(--text);">{{ m.calories }} kcal</div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="font-size:0.85rem;color:var(--muted);">No meals logged yet.</p>
+        {% endif %}
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Log a Meal Manually</div>
+        <form method="POST" action="{{ url_for('log_meal') }}" style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+          <select name="food_id" id="foodSelect" class="form-select" style="flex:1;min-width:220px;"></select>
+          <button type="submit" class="btn-primary" style="font-size:0.825rem;padding:0.6rem 1.25rem;">Add Meal</button>
+        </form>
+
+        <div style="margin-top:1rem;">
+          <a href="{{ url_for('meal_plan') }}" class="btn-outline" style="font-size:0.825rem;padding:0.6rem 1.25rem;">View Weekly Meal Plan</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
+{% endblock %}
 
-<!-- AI recommendation -->
-{% if recommendation %}
-<div class="bg-gradient-to-r from-green-500 to-orange-400 text-white p-6 rounded-2xl shadow mb-6">
-  <p class="uppercase text-xs tracking-widest opacity-80">AI Recommendation • {{ recommendation.meal_type }}</p>
-  <h2 class="text-2xl font-bold mt-1">{{ recommendation.food.name }}</h2>
-  <p class="mt-2 opacity-90">{{ recommendation.explanation }}</p>
-  <form method="POST" action="/log_meal" class="mt-4">
-    <input type="hidden" name="food_id" value="{{ recommendation.food.id }}">
-    <button class="bg-white text-green-600 font-semibold px-5 py-2 rounded-lg hover:bg-gray-100">Log this meal ✓</button>
-  </form>
-</div>
-{% endif %}
-
-<div class="grid md:grid-cols-2 gap-6">
-  <div class="bg-white p-6 rounded-2xl shadow">
-    <h3 class="font-bold mb-4">Macros today</h3>
-    <canvas id="macroChart"></canvas>
-  </div>
-
-  <div class="bg-white p-6 rounded-2xl shadow">
-    <h3 class="font-bold mb-4">Today's meals</h3>
-    {% if meals %}
-      <ul class="divide-y">
-        {% for m in meals %}
-          <li class="py-2 flex justify-between">
-            <span>{{ m.name }} <span class="text-xs text-gray-400">({{ m.meal_type }})</span></span>
-            <span class="text-gray-600">{{ m.calories }} kcal</span>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-gray-500">No meals logged yet.</p>
-    {% endif %}
-  </div>
-</div>
-
-<!-- Quick log -->
-<div class="bg-white mt-6 p-6 rounded-2xl shadow">
-  <h3 class="font-bold mb-4">Log a meal manually</h3>
-  <form method="POST" action="/log_meal" class="flex gap-3 flex-wrap">
-    <select name="food_id" class="border p-3 rounded-lg flex-1" id="foodSelect"></select>
-    <button class="bg-green-500 text-white px-5 rounded-lg hover:bg-green-600">Add</button>
-  </form>
-</div>
-
+{% block extra_scripts %}
 <script>
-const ctx = document.getElementById('macroChart');
-new Chart(ctx, {
-  type: 'doughnut',
-  data: {
-    labels: ['Protein', 'Carbs', 'Fats'],
-    datasets: [{
-      data: [{ protein }, { carbs }, { fats }],
-      backgroundColor: ['#10b981','#f59e0b','#ef4444']
-    }]
-  }
-});
-
-fetch('/api/foods').then(r=>r.json()).then(foods=>{
-  const sel = document.getElementById('foodSelect');
-  foods.forEach(f=>{
-    const o = document.createElement('option');
-    o.value = f.id;
-    o.textContent = `${f.name} — ${f.calories} kcal (${f.meal_type})`;
-    sel.appendChild(o);
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".progress-fill").forEach(function (bar) {
+    const width = bar.getAttribute("data-width") || 0;
+    setTimeout(function () {
+      bar.style.width = width + "%";
+    }, 150);
   });
+
+  const foodSelect = document.getElementById("foodSelect");
+  if (foodSelect) {
+    fetch("{{ url_for('api_foods') }}")
+      .then(function (response) { return response.json(); })
+      .then(function (foods) {
+        foods.forEach(function (food) {
+          const option = document.createElement("option");
+          option.value = food.id;
+          option.textContent = food.name + " - " + food.calories + " kcal (" + food.meal_type + ")";
+          foodSelect.appendChild(option);
+        });
+      });
+  }
 });
 </script>
 {% endblock %}
