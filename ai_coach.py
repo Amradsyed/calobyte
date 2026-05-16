@@ -1,7 +1,8 @@
-
 import os
+import json
+import urllib.request
+import urllib.error
 from pathlib import Path
-from openai import OpenAI
 
 
 def load_local_env():
@@ -17,7 +18,8 @@ def load_local_env():
         key, value = line.split("=", 1)
         os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
 
-load_dotenv()
+
+load_local_env()
 
 
 def get_ai_coach_advice(user, consumed, remaining, protein, carbs, fats, water, recommendation):
@@ -35,15 +37,9 @@ def get_ai_coach_advice(user, consumed, remaining, protein, carbs, fats, water, 
     if recommendation and recommendation.get("food"):
         recommended_food = recommendation["food"]["name"]
 
-    client = OpenAI(
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=api_key
-    )
-
     prompt = f"""
 You are CaloByte's AI fitness and meal coach.
-
-Use the user's profile and today's progress to give practical food, fitness, and hydration advice.
+Do not give medical advice. Keep answers practical and short.
 
 User profile:
 Name: {user.get("name")}
@@ -64,29 +60,42 @@ Fats: {fats}g
 Water glasses logged: {water}
 Recommended food from app: {recommended_food}
 
-Return exactly this format. Keep each line short:
-
+Return exactly this format:
 Summary: ...
 Meal Tip: ...
 Fitness Tip: ...
 Water Tip: ...
 """
 
-    try:
-        completion = client.chat.completions.create(
-            model="google/gemma-2-2b-it",
-            messages=[
-                {
-                    "role": "user",
-                    "content": "You are a concise nutrition and fitness coach. Do not give medical advice. Keep answers practical and short."
-                }, 
-            ],
-            temperature=0.2,
-            top_p=0.7,
-            max_tokens=300
-        )
+    payload = {
+        "model": "google/gemma-2-2b-it",
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "temperature": 0.2,
+        "top_p": 0.7,
+        "max_tokens": 300,
+        "stream": False
+    }
 
-        text = completion.choices[0].message.content.strip()
+    request = urllib.request.Request(
+        "https://integrate.api.nvidia.com/v1/chat/completions",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
+        method="POST"
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+
+        text = data["choices"][0]["message"]["content"].strip()
 
         advice = {
             "summary": "",
@@ -117,11 +126,14 @@ Water Tip: ...
 
         return advice
 
+    except urllib.error.HTTPError as e:
+        print("AI Coach HTTP error:", e.code, e.read().decode("utf-8"))
     except Exception as e:
         print("AI Coach error:", repr(e))
-        return {
-            "summary": "AI coach could not load right now.",
-            "meal_tip": "Check the terminal for the AI Coach error message.",
-            "fitness_tip": "Keep moving today, even a short walk helps.",
-            "water_tip": "Stay consistent with your water goal."
-        }
+
+    return {
+        "summary": "AI coach could not load right now.",
+        "meal_tip": "Check the terminal or PythonAnywhere error log for the AI Coach error message.",
+        "fitness_tip": "Keep moving today, even a short walk helps.",
+        "water_tip": "Stay consistent with your water goal."
+    }
