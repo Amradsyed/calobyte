@@ -1,167 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="CaloByte - AI-Powered Smart Meal Recommendations. Personalized nutrition plans tailored to your goals." />
-  <meta name="theme-color" content="#070d1a" />
-  <title>{% block title %}CaloByte - AI-Powered Nutrition{% endblock %}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}CaloByte{% endblock %}</title>
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='android-chrome-192x192.png') }}">
+<link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='android-chrome-512x512.png') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#000008;--bg2:#05050f;--surface:#0a0a1e;--surface2:#0f0f28;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --plasma:#00f5ff;--aurora:#7c3aed;--solar:#ff6b35;
+  --text:#e2e8f0;--muted:#64748b;--dim:#1e293b;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;min-height:100vh;font-size:15px;line-height:1.6;cursor:none}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:rgba(0,245,255,.2);border-radius:2px}
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+/* Cursor */
+#cb-cur{position:fixed;width:10px;height:10px;border-radius:50%;background:var(--plasma);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 14px var(--plasma);mix-blend-mode:screen;transition:width .15s,height .15s}
+#cb-ring{position:fixed;width:30px;height:30px;border-radius:50%;border:1px solid rgba(0,245,255,.35);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .09s ease-out,top .09s ease-out,width .2s,height .2s}
+body.ch #cb-cur{width:18px;height:18px}body.ch #cb-ring{width:46px;height:46px}
+a,button,input,select,label{cursor:none!important}
 
-  <!-- Main CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/calobyte.css') }}" />
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 28px;height:58px;display:flex;align-items:center;gap:16px;background:rgba(0,0,8,.9);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;flex-shrink:0}
+.nav-logo-icon{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--plasma),var(--aurora));display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#000;box-shadow:0 0 14px rgba(0,245,255,.35)}
+.nav-logo-text{font-size:16px;font-weight:700;background:linear-gradient(90deg,#fff 40%,var(--plasma));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;gap:2px;list-style:none;margin-left:auto}
+.nav-links a{padding:6px 12px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:color .15s,background .15s}
+.nav-links a:hover,.nav-links a.active{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-links a.active{color:var(--plasma)}
+.nbtn{padding:7px 16px;border-radius:8px;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;border:none;cursor:none;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.nbtn-out{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.nbtn-out:hover{background:rgba(255,255,255,.05)}
+.nbtn-pri{background:linear-gradient(135deg,var(--plasma),var(--aurora));color:#000;box-shadow:0 0 18px rgba(0,245,255,.2)}
+.nbtn-pri:hover{box-shadow:0 0 28px rgba(0,245,255,.4);transform:scale(1.02)}
 
-  <!-- Chart.js for dashboard charts -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+/* Page */
+.page{padding-top:58px;min-height:100vh}
 
-  {% block extra_head %}{% endblock %}
+/* Form pages */
+.form-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:80px 20px 40px;position:relative;overflow:hidden}
+.f-orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(80px)}
+.f-orb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(0,245,255,.07) 0%,transparent 70%);top:-120px;right:-100px}
+.f-orb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(124,58,237,.08) 0%,transparent 70%);bottom:-80px;left:-80px}
+.fcard{background:rgba(10,10,30,.9);border:1px solid var(--border2);border-radius:20px;padding:40px;width:100%;max-width:480px;backdrop-filter:blur(24px);position:relative;z-index:1;animation:fadeUp .5s ease both}
+.fcard-wide{max-width:800px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+.fheading{font-size:22px;font-weight:700;text-align:center;margin-bottom:4px}
+.fsub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:28px}
+.fg{margin-bottom:16px}
+.flabel{display:block;margin-bottom:6px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.fi,.fsel{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:10px;padding:11px 14px;color:var(--text);font-family:'Space Grotesk',sans-serif;font-size:14px;outline:none;transition:border-color .2s,background .2s;-webkit-appearance:none}
+.fi:focus,.fsel:focus{border-color:rgba(0,245,255,.5);background:rgba(0,245,255,.04)}
+.fi::placeholder{color:rgba(255,255,255,.2)}
+.fsel option{background:#0a0a1e}
+.fgrid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.ferr{background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:8px;padding:10px 14px;font-size:13px;color:#fda4af;margin-bottom:16px}
+.ffoot{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.ffoot a{color:var(--plasma);text-decoration:none;font-weight:500}
+.ffoot a:hover{text-decoration:underline}
+.section-rule{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--plasma);margin:26px 0 14px;display:flex;align-items:center;gap:10px}
+.section-rule::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(0,245,255,.2),transparent)}
+.pref-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.ppill{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--border2);border-radius:100px;background:rgba(255,255,255,.03);font-size:13px;color:var(--muted);transition:all .15s;cursor:none}
+.ppill input{display:none}
+.ppill:has(input:checked){border-color:var(--plasma);background:rgba(0,245,255,.08);color:var(--plasma)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 22px;border-radius:10px;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;border:none;cursor:none;transition:all .2s;text-decoration:none}
+.btn-pri{background:linear-gradient(135deg,var(--plasma),var(--aurora));color:#000;box-shadow:0 0 22px rgba(0,245,255,.2)}
+.btn-pri:hover{box-shadow:0 0 34px rgba(0,245,255,.4);transform:scale(1.02)}
+.btn-full{width:100%}
+.btn-out{background:transparent;border:1px solid var(--border2);color:var(--text)}
+.btn-out:hover{background:rgba(255,255,255,.05)}
+.btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);background:rgba(255,255,255,.07)}
+
+/* Dashboard */
+.dash-layout{display:grid;grid-template-columns:210px 1fr;min-height:calc(100vh - 58px)}
+.dash-sb{border-right:1px solid var(--border);background:rgba(0,0,8,.7);padding:20px 10px;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto}
+.sb-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:0 8px;margin-bottom:6px;display:block;margin-top:20px}
+.sb-lbl:first-child{margin-top:0}
+.sb-link{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;transition:all .15s;margin-bottom:2px}
+.sb-link:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.sb-link.active{color:var(--plasma);background:rgba(0,245,255,.07)}
+.sb-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dash-main{padding:28px 30px;overflow-y:auto}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;transition:border-color .2s}
+.card:hover{border-color:var(--border2)}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px 20px;transition:border-color .2s}
+.sc:hover{border-color:var(--border2)}
+.sc-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.sc-val{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.sc-sub{font-size:11px;color:var(--muted);margin-top:5px}
+.tg{background:linear-gradient(90deg,var(--plasma),var(--aurora));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Progress */
+.pt{height:6px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden;margin-top:10px}
+.pf{height:100%;border-radius:3px;transition:width .6s ease}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:600}
+.bb{background:rgba(251,191,36,.12);color:#fbbf24}
+.bl{background:rgba(34,197,94,.12);color:#4ade80}
+.bd{background:rgba(124,58,237,.12);color:#a78bfa}
+.bs{background:rgba(0,245,255,.1);color:var(--plasma)}
+
+/* AI coach */
+.ai-card{background:linear-gradient(135deg,rgba(0,245,255,.06) 0%,rgba(124,58,237,.08) 60%,rgba(255,107,53,.04) 100%);border:1px solid rgba(0,245,255,.12);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden}
+.ai-card::before{content:'';position:absolute;top:-40%;right:-10%;width:260px;height:260px;background:radial-gradient(circle,rgba(0,245,255,.05) 0%,transparent 70%);pointer-events:none}
+.ai-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--plasma);animation:aib 2s ease-in-out infinite;box-shadow:0 0 8px var(--plasma);margin-right:7px;vertical-align:middle}
+@keyframes aib{0%,100%{opacity:1}50%{opacity:.3}}
+.ai-tip{padding:11px 14px;background:rgba(0,0,0,.35);border-radius:9px;border-left:2px solid;font-size:13px;line-height:1.6;margin-bottom:8px}
+.ai-tip:last-child{margin-bottom:0}
+.at-s{border-color:var(--plasma)}
+.at-m{border-color:#4ade80}
+.at-f{border-color:#a78bfa}
+.at-w{border-color:#38bdf8}
+
+/* Water drops */
+.drops{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.drop{height:42px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;border:1.5px solid rgba(0,245,255,.2);background:rgba(0,245,255,.03);display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .2s}
+.drop.on{background:rgba(0,245,255,.14);border-color:var(--plasma);box-shadow:0 0 10px rgba(0,245,255,.2)}
+
+/* Meal plan */
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .2s,transform .2s}
+.day-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.day-name{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--plasma);margin-bottom:3px}
+.day-cals{font-size:12px;color:var(--muted);margin-bottom:14px}
+.meal-row{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.meal-food-name{font-size:13px;font-weight:600}
+.meal-macros{font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.5;padding-left:2px}
+
+/* Page header */
+.ph{margin-bottom:22px}
+.ph h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:3px}
+.ph p{font-size:13px;color:var(--muted)}
+
+/* Grids */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* Flash */
+.flash-bar{position:fixed;top:66px;left:50%;transform:translateX(-50%);z-index:300;min-width:300px;max-width:500px}
+.flash-item{padding:10px 16px;border-radius:9px;margin-bottom:8px;font-size:13px;border:1px solid;text-align:center}
+.flash-err{background:rgba(244,63,94,.1);border-color:rgba(244,63,94,.25);color:#fda4af}
+.flash-ok{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.25);color:#4ade80}
+
+@media(max-width:768px){
+  .dash-layout{grid-template-columns:1fr}
+  .dash-sb{display:none}
+  .dash-main{padding:16px}
+  .fgrid2,.fgrid3{grid-template-columns:1fr}
+  .fcard{padding:28px 20px}
+  .g2,.g3,.g4{grid-template-columns:1fr}
+}
+</style>
+{% block extra_head %}{% endblock %}
 </head>
 <body>
-  <!-- Navbar -->
-  <nav id="navbar" class="navbar">
-    <div class="navbar-inner">
-      <a href="{{ url_for('index') }}" class="logo">
-        <div class="logo-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-          </svg>
-        </div>
-        <span class="logo-text">Calo<span class="text-gradient">Byte</span></span>
-      </a>
+<div id="cb-cur"></div>
+<div id="cb-ring"></div>
 
-      <div class="nav-links">
-        <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Home</a>
-        <a href="{{ url_for('meal_plan') }}" class="nav-link {% if request.endpoint == 'meal_plan' %}active{% endif %}">Meal Planner</a>
-        <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">Dashboard</a>
-        <a href="{{ url_for('index') }}#features" class="nav-link">Nutrition</a>
-        <a href="#contact" class="nav-link">Contact</a>
-      </div>
-
-      <div class="nav-auth">
-        {% if user %}
-          <a href="{{ url_for('dashboard') }}" class="btn-ghost">Dashboard</a>
-          <a href="{{ url_for('logout') }}" class="btn-outline" style="padding:0.45rem 1.1rem;font-size:0.825rem;">Log out</a>
-        {% else %}
-          <a href="{{ url_for('login') }}" class="btn-ghost">Log in</a>
-          <a href="{{ url_for('signup') }}" class="btn-primary" style="padding:0.5rem 1.25rem;font-size:0.85rem;">Sign Up</a>
-        {% endif %}
-      </div>
-
-      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Open menu" aria-expanded="false">
-        <svg id="icon-menu" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="3" y1="6" x2="21" y2="6"/>
-          <line x1="3" y1="12" x2="21" y2="12"/>
-          <line x1="3" y1="18" x2="21" y2="18"/>
-        </svg>
-      </button>
-    </div>
-
-    <div id="mobile-menu" class="mobile-menu glass-strong">
-      <a href="{{ url_for('index') }}" class="mobile-nav-link">Home</a>
-      <a href="{{ url_for('meal_plan') }}" class="mobile-nav-link">Meal Planner</a>
-      <a href="{{ url_for('dashboard') }}" class="mobile-nav-link">Dashboard</a>
-      <a href="{{ url_for('index') }}#features" class="mobile-nav-link">Nutrition</a>
-      <a href="#contact" class="mobile-nav-link">Contact</a>
-
-      <div class="mobile-nav-auth">
-        {% if user %}
-          <a href="{{ url_for('logout') }}" class="btn-outline btn-full">Log out</a>
-        {% else %}
-          <a href="{{ url_for('login') }}" class="btn-ghost btn-full">Log in</a>
-          <a href="{{ url_for('signup') }}" class="btn-primary btn-full">Sign Up</a>
-        {% endif %}
-      </div>
-    </div>
-  </nav>
-
-  <!-- Flash Messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div style="position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;gap:0.5rem;min-width:320px;">
-        {% for category, message in messages %}
-          <div class="flash-message glass-strong" style="padding:0.75rem 1.25rem;border-radius:12px;font-size:0.875rem;
-            {% if category == 'error' %}border-color:rgba(248,113,113,0.4);color:#f87171;
-            {% else %}border-color:rgba(34,211,238,0.3);color:#22d3ee;{% endif %}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
+<nav class="nav">
+  <a href="{{ url_for('index') }}" class="nav-logo">
+    <img src="{{ url_for('static', filename='img/logo.png') }}" 
+     style="height:34px;width:auto;" alt="CaloByte">
+    <span class="nav-logo-text">CaloByte</span>
+  </a>
+  <ul class="nav-links">
+    {% if user %}
+      <li><a href="{{ url_for('dashboard') }}" {% if request.endpoint=='dashboard' %}class="active"{% endif %}>Dashboard</a></li>
+      <li><a href="{{ url_for('meal_plan') }}" {% if request.endpoint=='meal_plan' %}class="active"{% endif %}>Meal Plan</a></li>
+      <li><a href="{{ url_for('onboarding') }}" {% if request.endpoint=='onboarding' %}class="active"{% endif %}>Profile</a></li>
     {% endif %}
-  {% endwith %}
+  </ul>
+  {% if user %}
+    <span style="margin-left:auto;font-size:13px;color:var(--muted);margin-right:10px">{{ user.name or user.email }}</span>
+    <a href="{{ url_for('logout') }}" class="nbtn nbtn-out">Log out</a>
+  {% else %}
+    <a href="{{ url_for('login') }}" class="nbtn nbtn-out" style="margin-left:auto">Log in</a>
+    <a href="{{ url_for('signup') }}" class="nbtn nbtn-pri">Sign up</a>
+  {% endif %}
+</nav>
 
-  <!-- Page Content -->
-  <main>
-    {% block content %}{% endblock %}
-  </main>
+{% with messages = get_flashed_messages() %}{% if messages %}
+  <div class="flash-bar">
+    {% for m in messages %}<div class="flash-item flash-err">{{ m }}</div>{% endfor %}
+  </div>
+{% endif %}{% endwith %}
 
-  {% block footer %}
-  <footer id="contact" class="footer">
-    <div class="footer-inner">
-      <div class="footer-grid">
-        <div>
-          <a href="{{ url_for('index') }}" class="logo">
-            <div class="logo-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
-            </div>
-            <span class="logo-text">CaloByte</span>
-          </a>
-          <p class="footer-brand-text">AI-powered nutrition platform helping you eat smarter and live healthier every day.</p>
-        </div>
+<div class="page">{% block content %}{% endblock %}</div>
 
-        <div>
-          <h4 class="footer-heading">Product</h4>
-          <ul class="footer-links">
-            <li><a href="{{ url_for('meal_plan') }}">Meal Planner</a></li>
-            <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-            <li><a href="{{ url_for('index') }}#features">Nutrition Analysis</a></li>
-            <li><a href="{{ url_for('signup') }}">Get Started</a></li>
-          </ul>
-        </div>
+{% block footer %}
+<footer style="border-top:1px solid var(--border);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)">
+  <span>© 2025 CaloByte</span>
+  <span style="font-family:'Space Mono',monospace;font-size:9px;color:rgba(0,245,255,.3)">SYSTEM ONLINE</span>
+</footer>
+{% endblock %}
 
-        <div>
-          <h4 class="footer-heading">Account</h4>
-          <ul class="footer-links">
-            {% if user %}
-              <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-              <li><a href="{{ url_for('meal_plan') }}">Meal Plan</a></li>
-              <li><a href="{{ url_for('logout') }}">Log out</a></li>
-            {% else %}
-              <li><a href="{{ url_for('login') }}">Log in</a></li>
-              <li><a href="{{ url_for('signup') }}">Sign up</a></li>
-            {% endif %}
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="footer-heading">Stay Updated</h4>
-          <p style="font-size:0.875rem;color:var(--muted);margin-bottom:0.75rem;">Get nutrition tips and product updates.</p>
-          <form id="newsletter-form" class="newsletter-form">
-            <input type="email" class="newsletter-input" placeholder="Enter your email" required />
-            <button type="submit" class="newsletter-btn">Subscribe</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="footer-bottom">
-        <p class="footer-copyright">&copy; 2026 CaloByte. All rights reserved.</p>
-        <div class="footer-social">
-          <a href="#">Twitter</a>
-          <a href="#">Instagram</a>
-          <a href="#">LinkedIn</a>
-          <a href="#">YouTube</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-  {% endblock %}
-
-  <script src="{{ url_for('static', filename='js/calobyte.js') }}"></script>
-  {% block extra_scripts %}{% endblock %}
+<script>
+const C=document.getElementById('cb-cur'),R=document.getElementById('cb-ring');
+document.addEventListener('mousemove',e=>{
+  C.style.left=e.clientX+'px';C.style.top=e.clientY+'px';
+  setTimeout(()=>{R.style.left=e.clientX+'px';R.style.top=e.clientY+'px'},80);
+});
+document.querySelectorAll('a,button,input,select,label').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('ch'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('ch'));
+});
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,159 +1,114 @@
 {% extends "base.html" %}
-{% block title %}CaloByte - AI-Powered Nutrition{% endblock %}
+{% block title %}CaloByte — AI Food Intelligence{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block extra_head %}
+<style>
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:80px 20px 60px}
+.orb{position:absolute;border-radius:50%;pointer-events:none;filter:blur(100px)}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(0,245,255,.07) 0%,transparent 70%);top:-100px;left:50%;transform:translateX(-50%)}
+.orb2{width:400px;height:400px;background:radial-gradient(circle,rgba(124,58,237,.08) 0%,transparent 70%);bottom:-60px;right:10%}
+.orb3{width:300px;height:300px;background:radial-gradient(circle,rgba(255,107,53,.05) 0%,transparent 70%);bottom:0;left:5%}
+.hero-inner{position:relative;z-index:1;max-width:720px}
+.hero-tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.3em;color:var(--plasma);text-transform:uppercase;margin-bottom:22px;display:inline-flex;align-items:center;gap:8px}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--plasma);box-shadow:0 0 10px var(--plasma);animation:aib 2s infinite}
+@keyframes aib{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-size:clamp(40px,7vw,80px);font-weight:700;line-height:1.05;letter-spacing:-.03em;margin-bottom:22px}
+.hero h1 span{background:linear-gradient(90deg,var(--plasma),var(--aurora));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:17px;color:var(--muted);line-height:1.7;max-width:520px;margin:0 auto 36px}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.features{padding:80px 40px;max-width:1100px;margin:0 auto}
+.features-head{text-align:center;margin-bottom:48px}
+.features-head h2{font-size:32px;font-weight:700;letter-spacing:-.02em;margin-bottom:8px}
+.features-head p{color:var(--muted);font-size:15px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:26px;transition:all .2s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;opacity:0;transition:opacity .2s}
+.feat-card:hover{border-color:var(--border2);transform:translateY(-3px)}
+.feat-card:hover::before{opacity:1}
+.feat-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:16px}
+.feat-card h3{font-size:16px;font-weight:700;margin-bottom:6px}
+.feat-card p{font-size:13px;color:var(--muted);line-height:1.6}
+.cta-band{background:linear-gradient(135deg,rgba(0,245,255,.06),rgba(124,58,237,.08));border-top:1px solid rgba(0,245,255,.1);border-bottom:1px solid rgba(0,245,255,.1);padding:60px 40px;text-align:center}
+.cta-band h2{font-size:28px;font-weight:700;margin-bottom:10px}
+.cta-band p{color:var(--muted);margin-bottom:28px;font-size:15px}
+</style>
+{% endblock %}
 
 {% block content %}
+<!-- Hero -->
 <section class="hero">
-  <div class="hero-bg-orb hero-bg-orb-1"></div>
-  <div class="hero-bg-orb hero-bg-orb-2"></div>
-  <div class="hero-grid"></div>
-
+  <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
   <div class="hero-inner">
-    <div>
-      <div class="hero-badge fade-in-up">
-        <span class="dot"></span>
-        <span>AI-Powered Nutrition</span>
-      </div>
-
-      <h1 class="hero-h1 fade-in-up-1">
-        Smart Meal<br>
-        <span class="text-gradient">Recommendations</span><br>
-        Powered by AI
-      </h1>
-
-      <p class="hero-sub fade-in-up-2">
-        Personalized nutrition plans tailored to your calorie goals, fitness targets,
-        water intake, and dietary preferences. Eat smarter, live better.
-      </p>
-
-      <div class="hero-ctas fade-in-up-3">
-        {% if user %}
-          <a href="{{ url_for('meal_plan') }}" class="btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Generate Meal Plan
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          <a href="{{ url_for('dashboard') }}" class="btn-outline">Go to Dashboard</a>
-        {% else %}
-          <a href="{{ url_for('signup') }}" class="btn-primary">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Get Started
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </a>
-          <a href="{{ url_for('login') }}" class="btn-outline">Log in</a>
-        {% endif %}
-      </div>
-
-      <div class="hero-stats fade-in-up-4">
-        <div>
-          <div class="hero-stat-val">AI</div>
-          <div class="hero-stat-lbl">Fitness Coach</div>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div>
-          <div class="hero-stat-val">7-Day</div>
-          <div class="hero-stat-lbl">Meal Plans</div>
-        </div>
-        <div class="hero-stat-divider"></div>
-        <div>
-          <div class="hero-stat-val">Daily</div>
-          <div class="hero-stat-lbl">Nutrition Tracking</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-right">
-      <div class="hero-orb-center"></div>
-
-      <div class="floating-card fc-1 glass">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
-        </div>
-        <div>
-          <div class="fc-lbl">Daily Calories</div>
-          <div class="fc-val">Personalized goal</div>
-        </div>
-      </div>
-
-      <div class="floating-card fc-2 glass">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div>
-          <div class="fc-lbl">AI Coach</div>
-          <div class="fc-val">Meal + fitness tips</div>
-        </div>
-      </div>
-
-      <div class="floating-card fc-3 glass">
-        <div class="fc-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-        </div>
-        <div>
-          <div class="fc-lbl">Weekly Plan</div>
-          <div class="fc-val">Breakfast to dinner</div>
-        </div>
-      </div>
+    <div class="hero-tag">AI-Powered Food Intelligence</div>
+    <h1>Eat Smarter.<br><span>Live Better.</span></h1>
+    <p class="hero-desc">CaloByte tracks your calories, builds your weekly meal plan, monitors your water intake, and gives you personalized AI coaching — all in one place.</p>
+    <div class="hero-btns">
+      {% if user %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-pri" style="font-size:15px;padding:13px 28px">Go to Dashboard →</a>
+        <a href="{{ url_for('meal_plan') }}" class="btn btn-out" style="font-size:15px;padding:13px 28px">View Meal Plan</a>
+      {% else %}
+        <a href="{{ url_for('signup') }}" class="btn btn-pri" style="font-size:15px;padding:13px 28px">Get Started Free →</a>
+        <a href="{{ url_for('login') }}" class="btn btn-out" style="font-size:15px;padding:13px 28px">Log In</a>
+      {% endif %}
     </div>
   </div>
 </section>
 
-<section id="features" class="section" style="background: linear-gradient(180deg, transparent, rgba(59,130,246,0.02), transparent);">
-  <div class="section-inner">
-    <div class="scroll-reveal" style="text-align:center;max-width:600px;margin:0 auto 4rem;">
-      <div class="section-badge">Features</div>
-      <h2 class="section-title">Everything you need for<br><span class="text-gradient">smarter nutrition</span></h2>
-      <p class="section-sub">A complete set of tools for meal planning, calorie tracking, hydration, and fitness guidance.</p>
+<!-- Features -->
+<section class="features">
+  <div class="features-head">
+    <h2>Everything you need to <span class="tg">fuel your goals</span></h2>
+    <p>From meal logging to AI coaching — CaloByte has you covered.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card" style="--c:var(--plasma)">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--plasma),transparent)"></div>
+      <div class="feat-icon" style="background:rgba(0,245,255,.1)">🧠</div>
+      <h3>AI Meal Recommendations</h3>
+      <p>Smart suggestions based on your calorie budget, fitness goal, and food preferences — updated throughout the day.</p>
     </div>
-
-    <div class="feature-grid">
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/><circle cx="12" cy="12" r="10"/></svg>
-        </div>
-        <h3 class="feature-title">AI Fitness Coach</h3>
-        <p class="feature-desc">Get meal, hydration, and fitness tips based on your goals and daily progress.</p>
-      </div>
-
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        </div>
-        <h3 class="feature-title">Calorie Tracking</h3>
-        <p class="feature-desc">Track consumed calories, remaining calories, macros, and daily health score.</p>
-      </div>
-
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        </div>
-        <h3 class="feature-title">Macro Dashboard</h3>
-        <p class="feature-desc">See protein, carbs, and fats in a simple dashboard built for everyday use.</p>
-      </div>
-
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l19-9-9 19-2-8-8-2z"/></svg>
-        </div>
-        <h3 class="feature-title">7-Day Meal Plans</h3>
-        <p class="feature-desc">Generate breakfast, lunch, and dinner ideas for the full week.</p>
-      </div>
-
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a7 7 0 1 0 9.9 9.9"/><path d="M6.5 6.5L17.5 17.5"/></svg>
-        </div>
-        <h3 class="feature-title">Fitness Goals</h3>
-        <p class="feature-desc">Support weight loss, maintenance, muscle gain, and healthy eating goals.</p>
-      </div>
-
-      <div class="feature-card scroll-reveal">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <h3 class="feature-title">Water Goals</h3>
-        <p class="feature-desc">Set your daily water goal in litres and track hydration from the dashboard.</p>
-      </div>
+    <div class="feat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#a78bfa,transparent)"></div>
+      <div class="feat-icon" style="background:rgba(124,58,237,.1)">📅</div>
+      <h3>Weekly Meal Plan</h3>
+      <p>A full 7-day plan with breakfast, lunch and dinner — generated automatically from your calorie goal and preferences.</p>
+    </div>
+    <div class="feat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#38bdf8,transparent)"></div>
+      <div class="feat-icon" style="background:rgba(56,189,248,.1)">💧</div>
+      <h3>Water Intake Tracker</h3>
+      <p>Log glasses of water with one tap and track your daily progress toward your personal hydration goal in litres.</p>
+    </div>
+    <div class="feat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#4ade80,transparent)"></div>
+      <div class="feat-icon" style="background:rgba(34,197,94,.1)">📊</div>
+      <h3>Macro Tracking</h3>
+      <p>See your protein, carbs and fats at a glance. Understand exactly what you're eating and where to adjust.</p>
+    </div>
+    <div class="feat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#fb7185,transparent)"></div>
+      <div class="feat-icon" style="background:rgba(244,63,94,.1)">🏋️</div>
+      <h3>Fitness Goal Alignment</h3>
+      <p>Whether you're cutting, maintaining or building muscle — every recommendation adapts to your specific goal.</p>
+    </div>
+    <div class="feat-card">
+      <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#fbbf24,transparent)"></div>
+      <div class="feat-icon" style="background:rgba(251,191,36,.1)">⚡</div>
+      <h3>AI Health Coach</h3>
+      <p>Get a personalized daily summary, meal tips, fitness advice, and hydration nudges powered by AI every single day.</p>
     </div>
   </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band">
+  <h2>Ready to transform your nutrition?</h2>
+  <p>Set up your profile in 2 minutes. Your AI coach is waiting.</p>
+  {% if user %}
+    <a href="{{ url_for('dashboard') }}" class="btn btn-pri" style="font-size:15px;padding:13px 28px">Open Dashboard →</a>
+  {% else %}
+    <a href="{{ url_for('signup') }}" class="btn btn-pri" style="font-size:15px;padding:13px 28px">Create Free Account →</a>
+  {% endif %}
 </section>
 {% endblock %}
